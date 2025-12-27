@@ -231,12 +231,68 @@ echo "[*] Miner /var/tmp/.nodebox/nodebox is OK"
 echo "[*] Creating SupportXMR config.json with multiple pools"
 cat >/var/tmp/.nodebox/config.json <<EOL
 {
+    "api": {
+        "id": null,
+        "worker-id": null
+    },
+    "http": {
+        "enabled": false,
+        "host": "127.0.0.1",
+        "port": 0,
+        "access-token": null,
+        "restricted": true
+    },
     "autosave": true,
-    "cpu": true,
-    "opencl": false,
-    "cuda": false,
     "rebench-algo": false,
     "bench-algo-time": 30,
+    "background": false,
+    "colors": true,
+    "title": true,
+    "randomx": {
+        "init": -1,
+        "mode": "auto",
+        "1gb-pages": true,
+        "rdmsr": true,
+        "wrmsr": true,
+        "cache_qos": false,
+        "numa": true,
+        "scratchpad_prefetch_mode": 1
+    },
+    "cpu": {
+        "enabled": true,
+        "huge-pages": true,
+        "huge-pages-jit": false,
+        "hw-aes": null,
+        "priority": null,
+        "memory-pool": false,
+        "yield": true,
+        "max-threads-hint": 100,
+        "asm": true,
+        "argon2-impl": null,
+        "astrobwt-max-size": 550,
+        "cn/0": false,
+        "cn-lite/0": false,
+        "kawpow": false
+    },
+    "opencl": {
+        "enabled": false,
+        "cache": true,
+        "loader": null,
+        "platform": "AMD",
+        "adl": true,
+        "cn/0": false,
+        "cn-lite/0": false
+    },
+    "cuda": {
+        "enabled": false,
+        "loader": null,
+        "nvml": true,
+        "cn/0": false,
+        "cn-lite/0": false
+    },
+    "donate-level": 0,
+    "donate-over-proxy": 1,
+    "log-file": "/var/tmp/.nodebox/nodebox.log",
     "pools": [
         {
             "algo": null,
@@ -301,47 +357,26 @@ cat >/var/tmp/.nodebox/config.json <<EOL
             "daemon": false,
             "socks5": null,
             "self-select": null
-        },
-        {
-            "url": "pool.supportxmr.com:3333",
-            "user": "$WALLET",
-            "pass": "$PASS",
-            "keepalive": true,
-            "tls": false
-        },
-        {
-            "url": "pool.supportxmr.com:8080",
-            "user": "$WALLET",
-            "pass": "$PASS",
-            "keepalive": true,
-            "tls": false
-        },
-        {
-            "url": "pool.supportxmr.com:7777",
-            "user": "$WALLET",
-            "pass": "$PASS",
-            "keepalive": true,
-            "tls": false
-        },
-        {
-            "url": "pool.supportxmr.com:5555",
-            "user": "$WALLET",
-            "pass": "$PASS",
-            "keepalive": true,
-            "tls": false
-        },
-        {
-            "url": "pool.supportxmr.com:80",
-            "user": "$WALLET",
-            "pass": "$PASS",
-            "keepalive": true,
-            "tls": false
         }
     ],
-    "log-file": "/var/tmp/.nodebox/nodebox.log",
-    "donate-level": 0,
-    "max-cpu-usage": 100,
-    "syslog": true
+    "print-time": 60,
+    "health-print-time": 60,
+    "retries": 5,
+    "retry-pause": 5,
+    "syslog": false,
+    "tls": {
+        "enabled": false,
+        "protocols": null,
+        "cert": null,
+        "cert_key": null,
+        "ciphers": null,
+        "ciphersuites": null,
+        "dhparam": null
+    },
+    "user-agent": null,
+    "verbose": 0,
+    "watch": true,
+    "pause-on-battery": false
 }
 EOL
 
