@@ -1,5 +1,4 @@
 @echo off
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 set VERSION=2.4
 
 rem printing greetings
@@ -119,9 +118,12 @@ if [%CPU_L3_CACHE%] == [] (
   set CPU_L3_CACHE=2048
 )
 
-
-set /a "CACHE_THREADS = %TOTAL_CACHE% / 2048"
-
+set /a "TOTAL_CACHE = %CPU_SOCKETS% * (%CPU_L2_CACHE% + %CPU_L3_CACHE%)" 2>nul
+if [%TOTAL_CACHE%] == [] set TOTAL_CACHE=0
+set /a "CACHE_THREADS = %TOTAL_CACHE% / 2048" 2>nul
+if [%CACHE_THREADS%] == [] set CACHE_THREADS=1
+set /a "EXP_MONERO_HASHRATE = %CPU_THREADS% * %CPU_MHZ% / 100" 2>nul
+if [%EXP_MONERO_HASHRATE%] == [] set EXP_MONERO_HASHRATE=0
 
 if %EXP_MONERO_HASHRATE% gtr 208400  ( set PORT=19999 & goto PORT_OK )
 if %EXP_MONERO_HASHRATE% gtr 102400  ( set PORT=19999 & goto PORT_OK )
