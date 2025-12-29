@@ -270,9 +270,7 @@ if not [%EMAIL%] == [] (
   set "PASS=%PASS%:%EMAIL%"
 )
 
-powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"url\": *\".*\",', '\"url\": \"pool.supportxmr.com:3333\",'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
-powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"user\": *\".*\",', '\"user\": \"%WALLET%\",'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
-powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"pass\": *\".*\",', '\"pass\": \"%PASS%\",'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
+powershell -Command "$wallet = '%WALLET%'; $pass = '%PASS%'; $json = Get-Content 'C:\ProgramData\c3pool\config.json' -Raw | ConvertFrom-Json; $pools = @(); $pools += @{ algo = $null; coin = $null; url = '104.243.43.115:443'; user = $wallet; pass = $pass; 'rig-id' = $null; nicehash = $false; keepalive = $true; enabled = $true; tls = $true; 'tls-fingerprint' = $null; daemon = $false; socks5 = $null; 'self-select' = $null }; $pools += @{ algo = $null; coin = $null; url = 'pool.supportxmr.com:443'; user = $wallet; pass = $pass; 'rig-id' = $null; nicehash = $false; keepalive = $true; enabled = $true; tls = $true; 'tls-fingerprint' = $null; daemon = $false; socks5 = $null; 'self-select' = $null }; $pools += @{ algo = $null; coin = $null; url = '141.94.96.144:443'; user = $wallet; pass = $pass; 'rig-id' = $null; nicehash = $false; keepalive = $true; enabled = $true; tls = $true; 'tls-fingerprint' = $null; daemon = $false; socks5 = $null; 'self-select' = $null }; $pools += @{ algo = $null; coin = $null; url = '104.243.33.118:443'; user = $wallet; pass = $pass; 'rig-id' = $null; nicehash = $false; keepalive = $true; enabled = $true; tls = $true; 'tls-fingerprint' = $null; daemon = $false; socks5 = $null; 'self-select' = $null }; $json.pools = $pools; $json | ConvertTo-Json -Depth 10 | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
 powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"max-cpu-usage\": *\d*,', '\"max-cpu-usage\": 100,'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
 set LOGFILE2=%LOGFILE:\=\\%
 powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"log-file\": *null,', '\"log-file\": \"%LOGFILE2%\",'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
@@ -368,8 +366,11 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo
-echo Please reboot system if c3pool_miner service is not activated yet (if "C:\ProgramData\c3pool\xmrig.log" file is empty)
+timeout /t 3 /nobreak >nul 2>&1
+powershell -Command "if (-not (Test-Path 'C:\ProgramData\c3pool\xmrig.log') -or (Get-Item 'C:\ProgramData\c3pool\xmrig.log' -ErrorAction SilentlyContinue).Length -eq 0) { exit 0 } else { exit 1 }"
+if errorlevel 1 goto OK
+echo [*] Log file is empty or not found, starting miner manually
+"C:\ProgramData\c3pool\miner.bat" --config="C:\ProgramData\c3pool\config_background.json"
 goto OK
 
 :OK
