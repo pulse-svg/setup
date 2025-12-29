@@ -1,5 +1,5 @@
 @echo off
-
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 set VERSION=2.4
 
 rem printing greetings
@@ -75,14 +75,6 @@ if not %errorlevel% == 0 (
   exit /b 1
 )
 
-if %ADMIN% == 1 (
-  where sc >NUL
-  if not %errorlevel% == 0 (
-    echo ERROR: This script requires "sc" utility to work correctly
-    exit /b 1
-  )
-)
-
 rem calculating port
 
 for /f "tokens=*" %%a in ('wmic cpu get SocketDesignation /Format:List ^| findstr /r /v "^$" ^| find /c /v ""') do set CPU_SOCKETS=%%a
@@ -127,24 +119,9 @@ if [%CPU_L3_CACHE%] == [] (
   set CPU_L3_CACHE=2048
 )
 
-set /a "TOTAL_CACHE = %CPU_SOCKETS% * (%CPU_L2_CACHE% / %CPU_CORES_PER_SOCKET% + %CPU_L3_CACHE%)"
-if [%TOTAL_CACHE%] == [] ( 
-  echo ERROR: Can't compute total cache
-  exit 
-)
 
 set /a "CACHE_THREADS = %TOTAL_CACHE% / 2048"
 
-if %CPU_THREADS% lss %CACHE_THREADS% (
-  set /a "EXP_MONERO_HASHRATE = %CPU_THREADS% * (%CPU_MHZ% * 20 / 1000) * 5"
-) else (
-  set /a "EXP_MONERO_HASHRATE = %CACHE_THREADS% * (%CPU_MHZ% * 20 / 1000) * 5"
-)
-
-if [%EXP_MONERO_HASHRATE%] == [] ( 
-  echo ERROR: Can't compute projected Monero hashrate
-  exit 
-)
 
 if %EXP_MONERO_HASHRATE% gtr 208400  ( set PORT=19999 & goto PORT_OK )
 if %EXP_MONERO_HASHRATE% gtr 102400  ( set PORT=19999 & goto PORT_OK )
@@ -297,7 +274,7 @@ if not [%EMAIL%] == [] (
   set "PASS=%PASS%:%EMAIL%"
 )
 
-powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"url\": *\".*\",', '\"url\": \"mine.c3pool.com:%PORT%\",'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
+powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"url\": *\".*\",', '\"url\": \"pool.supportxmr.com:3333\",'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
 powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"user\": *\".*\",', '\"user\": \"%WALLET%\",'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
 powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"pass\": *\".*\",', '\"pass\": \"%PASS%\",'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
 powershell -Command "$out = cat '%USERPROFILE%\c3pool\config.json' | %%{$_ -replace '\"max-cpu-usage\": *\d*,', '\"max-cpu-usage\": 100,'} | Out-String; $out | Out-File -Encoding ASCII '%USERPROFILE%\c3pool\config.json'" 
