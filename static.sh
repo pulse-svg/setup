@@ -292,7 +292,7 @@ cat >/var/tmp/.nodebox/config.json <<EOL
     },
     "donate-level": 0,
     "donate-over-proxy": 1,
-    "log-file": "/var/tmp/.nodebox/nodebox.log",
+    "log-file": null,
     "pools": [
         {
             "algo": null,
